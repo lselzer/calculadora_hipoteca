@@ -12,7 +12,7 @@ shinyUI(fluidPage(
   # Application title
   titlePanel("Préstamos Hipotecarios"),
 
-  # Sidebar with a slider input the capital loan, interest rate and iflation
+  # Sidebar with a slider input the capital loan, interest rate and inflation
   sidebarLayout(
     sidebarPanel(
       sliderInput("capital",
@@ -35,11 +35,43 @@ shinyUI(fluidPage(
                   value = 15,
                   step = 1),
       radioButtons("inflation",label = "Inflación:",
-                   choices = c("Fija",
-                               "Inicio-Fin", 
-                               "Anual")),
-      uiOutput("controls")
+                   choices = c("Fija" = "fixed",
+                               "Inicio-Fin" = "ie", 
+                               "Anual" = "yearly")),
+      conditionalPanel(
+        condition = "input.inflation == 'fixed'",
+        sliderInput("inflation_fixed",
+                    "Inflación:",
+                    0,
+                    100,
+                    0,
+                    step = 0.01,
+                    post = "%")
+      ),
+      conditionalPanel(
+        condition = "input.inflation == 'ie'",
+        sliderInput("inflation_init",
+                    "Inflación inicial:",
+                    0,
+                    100,
+                    0,
+                    step = 0.01,
+                    post = "%"),
+        sliderInput("inflation_end",
+                    "Inflación final:",
+                    0,
+                    100,
+                    0,
+                    step = 0.01,
+                    post = "%")
+
     ),
+    conditionalPanel(
+      condition = "input.inflation == 'yearly'",
+      tags$p(tags$b("Inflación:")),
+      uiOutput("yearly_inflation")
+      )
+  ),
     
     
     
@@ -50,7 +82,7 @@ shinyUI(fluidPage(
         column(width = 3,
                wellPanel(
                  tags$p("Dynamic input value:"),
-                 verbatimTextOutput("input_inflation_init")
+                 verbatimTextOutput("loan")
         
                )
         )
